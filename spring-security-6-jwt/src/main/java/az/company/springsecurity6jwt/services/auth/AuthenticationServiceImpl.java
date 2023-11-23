@@ -8,6 +8,8 @@ import az.company.springsecurity6jwt.models.auth.RegisterRequest;
 import az.company.springsecurity6jwt.repositories.UserRepository;
 import az.company.springsecurity6jwt.services.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ public class AuthenticationServiceImpl implements AuthenticationService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public AuthenticationResponse register(RegisterRequest registerRequest) {
@@ -37,6 +40,13 @@ public class AuthenticationServiceImpl implements AuthenticationService{
 
     @Override
     public AuthenticationResponse login(LoginRequest loginRequest) {
-        return null;
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword())
+        );
+        var user = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() -> new RuntimeException("Username not found"));
+        var jwtToken = jwtService.generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .build();
     }
 }
