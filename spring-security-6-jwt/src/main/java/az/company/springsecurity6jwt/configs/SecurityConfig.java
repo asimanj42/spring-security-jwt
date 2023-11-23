@@ -1,7 +1,6 @@
-package az.company.springsecurity6jwt.config;
+package az.company.springsecurity6jwt.configs;
 
 import az.company.springsecurity6jwt.filters.JwtAuthenticationFilter;
-import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
